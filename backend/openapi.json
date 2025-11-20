@@ -1,0 +1,245 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/cards": {
+      "post": {
+        "operationId": "CardsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCardDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ]
+      },
+      "get": {
+        "operationId": "CardsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Card"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ]
+      }
+    },
+    "/cards/{id}": {
+      "get": {
+        "operationId": "CardsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Card"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "cards"
+        ]
+      },
+      "patch": {
+        "operationId": "CardsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCardDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "cards"
+        ]
+      },
+      "delete": {
+        "operationId": "CardsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "cards"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Loyalty Cards API",
+    "description": "The loyalty cards API description",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "CreateCardDto": {
+        "type": "object",
+        "properties": {
+          "businessName": {
+            "type": "string"
+          },
+          "targetPoints": {
+            "type": "number"
+          },
+          "points": {
+            "type": "number",
+            "default": 0
+          },
+          "color": {
+            "type": "string",
+            "default": "#000000"
+          }
+        },
+        "required": [
+          "businessName",
+          "targetPoints"
+        ]
+      },
+      "Card": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "businessName": {
+            "type": "string"
+          },
+          "points": {
+            "type": "number"
+          },
+          "targetPoints": {
+            "type": "number"
+          },
+          "color": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "businessName",
+          "points",
+          "targetPoints",
+          "color",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateCardDto": {
+        "type": "object",
+        "properties": {
+          "businessName": {
+            "type": "string"
+          },
+          "targetPoints": {
+            "type": "number"
+          },
+          "points": {
+            "type": "number",
+            "default": 0
+          },
+          "color": {
+            "type": "string",
+            "default": "#000000"
+          }
+        }
+      }
+    }
+  }
+}

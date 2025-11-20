@@ -1,0 +1,40 @@
+import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { CardsService } from './cards.service';
+import { CreateCardDto } from './dto/create-card.dto';
+import { UpdateCardDto } from './dto/update-card.dto';
+import { Card } from './entities/card.entity';
+
+@ApiTags('cards')
+@Controller('cards')
+export class CardsController {
+  constructor(private readonly cardsService: CardsService) {}
+
+  @Post()
+  @ApiOkResponse({ type: Card })
+  create(@Body() createCardDto: CreateCardDto) {
+    return this.cardsService.create(createCardDto);
+  }
+
+  @Get()
+  @ApiOkResponse({ type: [Card] })
+  findAll() {
+    return this.cardsService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOkResponse({ type: Card })
+  findOne(@Param('id') id: string) {
+    return this.cardsService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateCardDto: UpdateCardDto) {
+    return this.cardsService.update(+id, updateCardDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.cardsService.remove(+id);
+  }
+}

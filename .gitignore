@@ -1,0 +1,53 @@
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Backend (NestJS)
+backend/dist/
+backend/coverage/
+backend/*.log
+backend/pids
+backend/*.pid
+backend/*.seed
+backend/*.pid.lock
+
+# Frontend (React/Vite)
+frontend/dist/
+frontend/build/
+frontend/.vite/
+frontend/*.local
+frontend/.eslintcache
+
+# Prisma
+*.db
+*.db-journal
+prisma/migrations/*/migration.sql
+!prisma/migrations/*/migration.sql
+
+# Docker
+docker-compose.override.yml
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+**/node_modules/

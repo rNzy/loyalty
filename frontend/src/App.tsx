@@ -26,7 +26,7 @@ function App() {
         </header>
 
         <main className="max-w-7xl mx-auto">
-          <CardList />
+          <CardList onAddCard={() => setIsModalOpen(true)} />
         </main>
 
         <AddCardModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />

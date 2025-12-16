@@ -1,14 +1,27 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { getCardsControllerFindAllQueryKey, useCardsControllerFindAll, useCardsControllerUpdate } from '../api/endpoints/cards/cards';
+import { getCardsControllerFindAllQueryKey, useCardsControllerFindAll, useCardsControllerRemove, useCardsControllerUpdate } from '../api/endpoints/cards/cards';
 import type { Card } from '../api/model';
 import { AddPointsModal } from './AddPointsModal';
 import { CardItem } from './CardItem';
+import { EmptyState } from './EmptyState';
 
-export function CardList() {
+interface CardListProps {
+  onAddCard?: () => void;
+}
+
+export function CardList({ onAddCard }: CardListProps) {
   const { data: response, isLoading, error } = useCardsControllerFindAll();
   const queryClient = useQueryClient();
   const { mutate: updateCard } = useCardsControllerUpdate({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getCardsControllerFindAllQueryKey() });
+      }
+    }
+  });
+  
+  const { mutate: deleteCard } = useCardsControllerRemove({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getCardsControllerFindAllQueryKey() });
@@ -37,6 +50,10 @@ export function CardList() {
   if (isLoading) return <div className="p-8 text-center">Loading cards...</div>;
   if (error) return <div className="p-8 text-center text-red-500">Error loading cards</div>;
 
+  if (cards.length === 0) {
+    return <EmptyState onAddCard={() => onAddCard?.()} />;
+  }
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
@@ -56,13 +73,20 @@ export function CardList() {
           onSubmit={handleAddPoints}
           onReset={() => {
             if (!selectedCard) return;
+            const remainingPoints = Math.max(0, selectedCard.points - selectedCard.targetPoints);
             updateCard({
               id: selectedCard.id.toString(),
-              data: { points: 0 }
+              data: { points: remainingPoints }
             });
+          }}
+          onDelete={() => {
+            if (!selectedCard) return;
+            deleteCard({ id: selectedCard.id.toString() });
+            setIsPointsModalOpen(false);
           }}
           businessName={selectedCard.businessName}
           maxPoints={selectedCard.targetPoints}
+          currentPoints={selectedCard.points}
         />
       )}
     </>

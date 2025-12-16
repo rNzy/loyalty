@@ -11,12 +11,14 @@ interface CardProps {
 export function CardItem({ businessName, points, targetPoints, color, onAddPoints }: CardProps) {
   const progress = Math.min((points / targetPoints) * 100, 100);
   const isFulfilled = points >= targetPoints;
+  const isCloseToMax = progress >= 90 && !isFulfilled;
 
   return (
     <div
       className={twMerge(
         "relative overflow-hidden rounded-xl p-6 shadow-lg transition-transform hover:scale-105 cursor-pointer",
-        "bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+        "bg-white dark:bg-gray-800 text-gray-900 dark:text-white",
+        isCloseToMax && "animate-glow shadow-glow"
       )}
       style={{ borderTop: `4px solid ${color}` }}
       onClick={onAddPoints}

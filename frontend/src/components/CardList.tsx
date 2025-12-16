@@ -5,6 +5,7 @@ import type { Card } from '../api/model';
 import { AddPointsModal } from './AddPointsModal';
 import { CardItem } from './CardItem';
 import { EmptyState } from './EmptyState';
+import { Fireworks } from './Fireworks';
 
 interface CardListProps {
   onAddCard?: () => void;
@@ -31,6 +32,9 @@ export function CardList({ onAddCard }: CardListProps) {
 
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
   const [isPointsModalOpen, setIsPointsModalOpen] = useState(false);
+  const [showFireworks, setShowFireworks] = useState(false);
+  const [fireworksColor, setFireworksColor] = useState<string | undefined>();
+  const [fireworksBusinessName, setFireworksBusinessName] = useState<string | undefined>();
 
   const cards = Array.isArray(response?.data) ? response.data : [];
 
@@ -41,9 +45,28 @@ export function CardList({ onAddCard }: CardListProps) {
 
   const handleAddPoints = (points: number) => {
     if (!selectedCard) return;
+    
+    const wasNotFulfilled = selectedCard.points < selectedCard.targetPoints;
+    const newPoints = selectedCard.points + points;
+    const willBeFulfilled = newPoints >= selectedCard.targetPoints;
+    
+    if (wasNotFulfilled && willBeFulfilled) {
+      setFireworksColor(selectedCard.color);
+      setFireworksBusinessName(selectedCard.businessName);
+      setShowFireworks(true);
+    }
+    
     updateCard({
       id: selectedCard.id.toString(),
-      data: { points: selectedCard.points + points }
+      data: { points: newPoints }
+    });
+  };
+
+  const handleRename = (newName: string) => {
+    if (!selectedCard) return;
+    updateCard({
+      id: selectedCard.id.toString(),
+      data: { businessName: newName }
     });
   };
 
@@ -84,11 +107,19 @@ export function CardList({ onAddCard }: CardListProps) {
             deleteCard({ id: selectedCard.id.toString() });
             setIsPointsModalOpen(false);
           }}
+          onRename={handleRename}
           businessName={selectedCard.businessName}
           maxPoints={selectedCard.targetPoints}
           currentPoints={selectedCard.points}
         />
       )}
+
+      <Fireworks
+        isVisible={showFireworks}
+        onDismiss={() => setShowFireworks(false)}
+        color={fireworksColor}
+        businessName={fireworksBusinessName}
+      />
     </>
   );
 }

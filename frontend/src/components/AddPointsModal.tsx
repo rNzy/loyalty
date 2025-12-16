@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { X, Pencil, Check } from 'lucide-react';
 import React, { useState } from 'react';
 import { ConfirmationModal } from './ConfirmationModal';
 
@@ -8,16 +8,19 @@ interface AddPointsModalProps {
   onSubmit: (points: number) => void;
   onReset: () => void;
   onDelete: () => void;
+  onRename: (newName: string) => void;
   businessName: string;
   maxPoints: number;
   currentPoints: number;
 }
 
-export function AddPointsModal({ isOpen, onClose, onSubmit, onReset, onDelete, businessName, maxPoints, currentPoints }: AddPointsModalProps) {
+export function AddPointsModal({ isOpen, onClose, onSubmit, onReset, onDelete, onRename, businessName, maxPoints, currentPoints }: AddPointsModalProps) {
   const [points, setPoints] = useState(1);
   const [inputValue, setInputValue] = useState('1');
   const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(businessName);
 
   if (!isOpen) return null;
 
@@ -27,6 +30,18 @@ export function AddPointsModal({ isOpen, onClose, onSubmit, onReset, onDelete, b
     onClose();
     setPoints(1);
     setInputValue('1');
+  };
+
+  const handleSaveRename = () => {
+    if (editedName.trim() && editedName !== businessName) {
+      onRename(editedName.trim());
+    }
+    setIsEditingName(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditedName(businessName);
+    setIsEditingName(false);
   };
 
   const remainingPoints = Math.max(0, currentPoints - maxPoints);
@@ -39,10 +54,53 @@ export function AddPointsModal({ isOpen, onClose, onSubmit, onReset, onDelete, b
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-xl w-full max-w-md shadow-2xl">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold dark:text-white">Add Points to {businessName}</h2>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400">
-              <X size={24} />
-            </button>
+            <div className="flex items-center gap-2 flex-1 mr-4">
+              {isEditingName ? (
+                <div className="flex items-center gap-2 flex-1">
+                  <input
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSaveRename();
+                      if (e.key === 'Escape') handleCancelEdit();
+                    }}
+                    className="flex-1 text-2xl font-bold dark:text-white bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleSaveRename}
+                    className="text-green-600 hover:text-green-700 dark:text-green-400"
+                  >
+                    <Check size={20} />
+                  </button>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold dark:text-white">Add Points to {businessName}</h2>
+                  <button
+                    onClick={() => {
+                      setEditedName(businessName);
+                      setIsEditingName(true);
+                    }}
+                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400"
+                  >
+                    <Pencil size={18} />
+                  </button>
+                </>
+              )}
+            </div>
+            {!isEditingName && (
+              <button onClick={onClose} className="text-gray-500 hover:text-gray-700 dark:text-gray-400">
+                <X size={24} />
+              </button>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

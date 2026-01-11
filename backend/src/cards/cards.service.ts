@@ -7,32 +7,52 @@ import { UpdateCardDto } from './dto/update-card.dto';
 export class CardsService {
   constructor(private prisma: PrismaService) {}
 
-  create(createCardDto: CreateCardDto) {
+  create(userId: number, createCardDto: CreateCardDto) {
     return this.prisma.card.create({
-      data: createCardDto,
+      data: {
+        ...createCardDto,
+        userId,
+      },
     });
   }
 
-  findAll() {
+  findAll(userId: number) {
     return this.prisma.card.findMany({
+      where: { userId },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  findOne(id: number) {
-    return this.prisma.card.findUnique({
+  async findOne(id: number, userId: number) {
+    const card = await this.prisma.card.findUnique({
       where: { id },
     });
+    if (!card || card.userId !== userId) {
+        return null; // Or throw NotFoundException
+    }
+    return card;
   }
 
-  update(id: number, updateCardDto: UpdateCardDto) {
+  async update(id: number, userId: number, updateCardDto: UpdateCardDto) {
+    // Ensure ownership first
+    const card = await this.findOne(id, userId);
+    if (!card) {
+        throw new Error('Card not found or access denied');
+    }
+
     return this.prisma.card.update({
       where: { id },
       data: updateCardDto,
     });
   }
 
-  remove(id: number) {
+  async remove(id: number, userId: number) {
+    // Ensure ownership first
+    const card = await this.findOne(id, userId);
+    if (!card) {
+        throw new Error('Card not found or access denied');
+    }
+
     return this.prisma.card.delete({
       where: { id },
     });
